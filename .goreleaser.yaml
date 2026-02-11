@@ -1,0 +1,70 @@
+project_name: forge
+
+before:
+  hooks:
+    - go test ./...
+
+builds:
+  - id: forge
+    main: ./cmd/forge
+    binary: forge
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/LittleBunVerse/forge/internal/app.Version={{.Version}}
+      - -X github.com/LittleBunVerse/forge/internal/app.Commit={{.Commit}}
+      - -X github.com/LittleBunVerse/forge/internal/app.Date={{.Date}}
+
+archives:
+  - id: forge
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+homebrew_casks:
+  - name: forge
+    ids:
+      - forge
+    binaries:
+      - forge
+    homepage: https://github.com/LittleBunVerse/forge
+    description: 终端启动器：快速切换项目并接管启动 AI 编程助手（Claude Code/Codex 等）
+    repository:
+      owner: LittleBunVerse
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    # 未配置 Token 时自动跳过上传，避免发布失败；仍会在 dist 中生成 Cask 文件。
+    skip_upload: '{{ if eq .Env.HOMEBREW_TAP_GITHUB_TOKEN "" }}true{{ else }}false{{ end }}'
+    caveats: |
+      安装完成后可直接运行：
+        forge
+
+release:
+  replace_existing_artifacts: true

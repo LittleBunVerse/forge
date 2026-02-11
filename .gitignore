@@ -1,0 +1,8 @@
+# Go 编译产物（避免误提交到仓库）
+/forge
+/aidev
+/open-ai
+/golaunch
+/cod
+*.exe
+
