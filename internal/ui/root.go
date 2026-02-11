@@ -146,22 +146,22 @@ func (m rootSelectModel) View() string {
 func (m rootSelectModel) viewSelect() string {
 	var b strings.Builder
 
-	title := TitleStyle.Render("选择根目录")
-
+	title := PanelTitleStyle.Render("选择根目录")
 	b.WriteString(title + "\n\n")
 
 	for i, opt := range m.options {
 		if i == m.cursor {
 			cursor := CursorBar.String()
+			arrow := lipgloss.NewStyle().Foreground(colorCursorBar).Bold(true).Render(" ›")
 
 			label := lipgloss.NewStyle().
 				Bold(true).
 				Foreground(colorSecondary).
 				Render(opt.Label)
 
-			line := cursor + " " + label
+			line := cursor + " " + label + arrow
 			if opt.Value != "" {
-				path := SubtitleStyle.Render(" " + opt.Value)
+				path := SubtitleStyle.Render("  " + opt.Value)
 				line += path
 			}
 			b.WriteString(line + "\n")
@@ -174,33 +174,30 @@ func (m rootSelectModel) viewSelect() string {
 			if opt.Value != "" {
 				path := lipgloss.NewStyle().
 					Foreground(colorDim).
-					Render(" " + opt.Value)
+					Render("  " + opt.Value)
 				line += path
 			}
 			b.WriteString(line + "\n")
 		}
 	}
 
-	help := HelpStyle.Render("↑↓ 选择 · Enter 确认 · Esc 取消")
+	help := "\n" + FormatHelpLine("↑↓", "选择", "Enter", "确认", "Esc", "取消")
+	b.WriteString(help)
 
-	b.WriteString("\n" + help)
-
-	return DocStyle.Render(b.String())
+	return DocStyle.Render(PanelStyle.Render(b.String()))
 }
 
 func (m rootSelectModel) viewInput() string {
 	var b strings.Builder
 
-	title := TitleStyle.Render("输入根目录路径")
-
+	title := PanelTitleStyle.Render("输入根目录路径")
 	b.WriteString(title + "\n\n")
 	b.WriteString(m.input.View() + "\n")
 
-	help := HelpStyle.Render("Enter 确认 · Esc 返回选择")
+	help := "\n" + FormatHelpLine("Enter", "确认", "Esc", "返回选择")
+	b.WriteString(help)
 
-	b.WriteString("\n" + help)
-
-	return DocStyle.Render(b.String())
+	return DocStyle.Render(PanelStyle.Render(b.String()))
 }
 
 // ── 对外接口（签名不变）─────────────────────────────────────
@@ -225,7 +222,7 @@ func SelectRoot(label string, options []RootOption, defaultInput string) (string
 		return "", true, nil
 	}
 
-	fmt.Println(SelectedStyle.Render("✓ 已选择: " + result.selected))
+	fmt.Println(SelectedStyle.Render("  ✓ 已选择: " + result.selected))
 	fmt.Println()
 
 	return result.selected, false, nil

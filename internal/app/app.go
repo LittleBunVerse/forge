@@ -37,7 +37,7 @@ func Run(programPath string, args []string, stdout io.Writer, stderr io.Writer) 
 		}
 	}
 
-	ui.PrintBanner(stderr)
+	ui.PrintBanner(stderr, Version)
 
 	flagSet := flag.NewFlagSet(programName, flag.ContinueOnError)
 	flagSet.SetOutput(stderr)
@@ -168,6 +168,8 @@ func runInteractiveWorkspace(programName string, stdout, stderr io.Writer) int {
 	}
 
 	// 显示统一工作区选择 TUI
+	fmt.Fprintln(stderr, ui.StepStyle.Render("  Step 1/3")+"  "+ui.SubtitleStyle.Render("选择工作区"))
+	fmt.Fprintln(stderr)
 	wsResult, canceled, err := ui.SelectWorkspace(savedRoot, projects)
 	if err != nil {
 		fmt.Fprintf(stderr, "工作区选择失败：%v\n", err)
@@ -183,8 +185,8 @@ func runInteractiveWorkspace(programName string, stdout, stderr io.Writer) int {
 	case ui.WorkspaceCurrentDir:
 		// 直接使用当前目录
 		projectDir = wsResult.ProjectPath
-		fmt.Fprintln(stderr, ui.SelectedStyle.Render("✓ 已选择: 当前目录"))
-		fmt.Fprintln(stderr, ui.SubtitleStyle.Render("  "+projectDir))
+		fmt.Fprintln(stderr, ui.SelectedStyle.Render("  ✓ 已选择: 当前目录"))
+		fmt.Fprintln(stderr, ui.SubtitleStyle.Render("    "+projectDir))
 		fmt.Fprintln(stderr)
 
 	case ui.WorkspaceProject:
@@ -195,8 +197,8 @@ func runInteractiveWorkspace(programName string, stdout, stderr io.Writer) int {
 			return exitError
 		}
 		projectDir = normalized
-		fmt.Fprintln(stderr, ui.SelectedStyle.Render("✓ 已选择: "+filepath.Base(projectDir)))
-		fmt.Fprintln(stderr, ui.SubtitleStyle.Render("  "+projectDir))
+		fmt.Fprintln(stderr, ui.SelectedStyle.Render("  ✓ 已选择: "+filepath.Base(projectDir)))
+		fmt.Fprintln(stderr, ui.SubtitleStyle.Render("    "+projectDir))
 		fmt.Fprintln(stderr)
 
 	case ui.WorkspaceBrowseRoot:
@@ -262,6 +264,8 @@ func scanAndSelectDir(normalizedRoot string, stdout io.Writer, stderr io.Writer)
 		return exitError
 	}
 
+	fmt.Fprintln(stderr, ui.StepStyle.Render("  Step 2/3")+"  "+ui.SubtitleStyle.Render("选择项目目录"))
+	fmt.Fprintln(stderr)
 	selectedDir, canceled, err := ui.SelectDir(dirs)
 	if err != nil {
 		fmt.Fprintf(stderr, "选择目录失败：%v\n", err)
@@ -279,6 +283,8 @@ func selectCommandAndRun(projectDir string, stderr io.Writer) int {
 	cfg2, _, _ := config.Load()
 	commands := cfg2.GetCommands()
 
+	fmt.Fprintln(stderr, ui.StepStyle.Render("  Step 3/3")+"  "+ui.SubtitleStyle.Render("选择启动模式"))
+	fmt.Fprintln(stderr)
 	selectedCmd, canceled, err := ui.SelectCommand(commands)
 	if err != nil {
 		fmt.Fprintf(stderr, "选择命令失败：%v\n", err)

@@ -36,6 +36,17 @@ type wsOption struct {
 	path  string // 直接可用的路径（CurrentDir / Project）
 }
 
+// ── 序号徽章 ────────────────────────────────────────────────
+
+var numberBadges = []string{"❶", "❷", "❸", "❹", "❺", "❻", "❼", "❽", "❾", "❿"}
+
+func getBadge(index int) string {
+	if index < len(numberBadges) {
+		return numberBadges[index]
+	}
+	return fmt.Sprintf("%d.", index+1)
+}
+
 // ── Bubble Tea Model ────────────────────────────────────────
 
 type workspaceModel struct {
@@ -80,20 +91,21 @@ func (m workspaceModel) View() string {
 
 	var b strings.Builder
 
-	title := TitleStyle.Render("选择工作区")
-
+	// 面板标题
+	title := PanelTitleStyle.Render("选择工作区")
 	b.WriteString(title + "\n\n")
 
 	for i, opt := range m.options {
 		if i == m.cursor {
 			cursor := CursorBar.String()
+			arrow := lipgloss.NewStyle().Foreground(colorCursorBar).Bold(true).Render(" ›")
 
 			label := lipgloss.NewStyle().
 				Bold(true).
 				Foreground(colorSecondary).
 				Render(opt.label)
 
-			line := cursor + " " + label
+			line := cursor + " " + label + arrow
 			if opt.desc != "" {
 				desc := SubtitleStyle.Render("  " + opt.desc)
 				line += desc
@@ -115,11 +127,11 @@ func (m workspaceModel) View() string {
 		}
 	}
 
-	help := HelpStyle.Render("↑↓ 选择 · Enter 确认 · Esc 取消")
+	// 快捷键帮助
+	help := "\n" + FormatHelpLine("↑↓", "选择", "Enter", "确认", "Esc", "取消")
+	b.WriteString(help)
 
-	b.WriteString("\n" + help)
-
-	return DocStyle.Render(b.String())
+	return DocStyle.Render(PanelStyle.Render(b.String()))
 }
 
 // ── 对外接口 ────────────────────────────────────────────────

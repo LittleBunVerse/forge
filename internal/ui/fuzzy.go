@@ -81,7 +81,7 @@ type dirDelegate struct {
 func newDirDelegate() dirDelegate {
 	d := list.NewDefaultDelegate()
 
-	// 样式自定义
+	// 选中项样式
 	d.Styles.SelectedTitle = lipgloss.NewStyle().
 		Foreground(colorSecondary).
 		Bold(true).
@@ -91,6 +91,7 @@ func newDirDelegate() dirDelegate {
 		Foreground(colorDim).
 		PaddingLeft(1)
 
+	// 普通项样式
 	d.Styles.NormalTitle = lipgloss.NewStyle().
 		Foreground(colorFg).
 		PaddingLeft(2)
@@ -114,7 +115,8 @@ func (d dirDelegate) Render(w io.Writer, m list.Model, index int, item list.Item
 
 	var title, desc string
 	if isSelected {
-		title = d.Styles.SelectedTitle.Render("▌ " + i.Title())
+		arrow := lipgloss.NewStyle().Foreground(colorCursorBar).Bold(true).Render(" ›")
+		title = d.Styles.SelectedTitle.Render("▌ " + i.Title() + arrow)
 		desc = d.Styles.SelectedDesc.Render("  " + i.Description())
 	} else {
 		title = d.Styles.NormalTitle.Render("  " + i.Title())
@@ -143,11 +145,8 @@ func SelectDir(dirs []scan.Dir) (scan.Dir, bool, error) {
 	l.SetShowStatusBar(true)
 	l.SetShowHelp(true)
 
-	// 标题样式
-	l.Styles.Title = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(colorPrimary).
-		Padding(0, 1)
+	// 标题样式（使用面板标题样式）
+	l.Styles.Title = PanelTitleStyle.Copy().Padding(0, 1)
 
 	// 过滤提示样式
 	l.FilterInput.PromptStyle = lipgloss.NewStyle().Foreground(colorSecondary)
@@ -179,8 +178,8 @@ func SelectDir(dirs []scan.Dir) (scan.Dir, bool, error) {
 	}
 
 	// 输出选择结果
-	fmt.Println(SelectedStyle.Render("✓ 已选择: " + result.selected.Name))
-	fmt.Println(SubtitleStyle.Render("  " + result.selected.Path))
+	fmt.Println(SelectedStyle.Render("  ✓ 已选择: " + result.selected.Name))
+	fmt.Println(SubtitleStyle.Render("    " + result.selected.Path))
 	fmt.Println()
 
 	return result.selected, false, nil

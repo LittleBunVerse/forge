@@ -79,22 +79,22 @@ func (m commandSelectModel) View() string {
 
 	var b strings.Builder
 
-	title := TitleStyle.Render("选择启动模式")
-
+	title := PanelTitleStyle.Render("选择启动模式")
 	b.WriteString(title + "\n\n")
 
 	for i, item := range m.items {
 		if i == m.cursor {
 			cursor := CursorBar.String()
+			arrow := lipgloss.NewStyle().Foreground(colorCursorBar).Bold(true).Render(" ›")
 
 			name := lipgloss.NewStyle().
 				Bold(true).
 				Foreground(colorSecondary).
 				Render(item.cfg.Name)
 
-			desc := SubtitleStyle.Render(" " + item.desc)
+			desc := CmdDescStyle.Render("  " + item.desc)
 
-			b.WriteString(cursor + " " + name + desc + "\n")
+			b.WriteString(cursor + " " + name + arrow + desc + "\n")
 		} else {
 			name := lipgloss.NewStyle().
 				Foreground(colorFg).
@@ -102,17 +102,16 @@ func (m commandSelectModel) View() string {
 
 			desc := lipgloss.NewStyle().
 				Foreground(colorDim).
-				Render(" " + item.desc)
+				Render("  " + item.desc)
 
 			b.WriteString("  " + name + desc + "\n")
 		}
 	}
 
-	help := HelpStyle.Render("↑↓ 选择 · Enter 确认 · Esc 取消")
+	help := "\n" + FormatHelpLine("↑↓", "选择", "Enter", "确认", "Esc", "取消")
+	b.WriteString(help)
 
-	b.WriteString("\n" + help)
-
-	return DocStyle.Render(b.String())
+	return DocStyle.Render(PanelStyle.Render(b.String()))
 }
 
 // ── 对外接口 ────────────────────────────────────────────────
@@ -139,7 +138,7 @@ func SelectCommand(commands []config.CommandConfig) (config.CommandConfig, bool,
 		return config.CommandConfig{}, true, nil
 	}
 
-	fmt.Println(SelectedStyle.Render("✓ 已选择: " + result.selected.Name))
+	fmt.Println(SelectedStyle.Render("  ✓ 已选择: " + result.selected.Name))
 	fmt.Println()
 
 	return result.selected, false, nil

@@ -16,6 +16,16 @@ var (
 	colorYellow    = lipgloss.Color("11") // Bright Yellow — 提示色
 )
 
+// ── Banner 渐变色板 ─────────────────────────────────────────
+var bannerGradient = []lipgloss.Color{
+	lipgloss.Color("14"), // Bright Cyan
+	lipgloss.Color("14"), // Bright Cyan
+	lipgloss.Color("12"), // Bright Blue
+	lipgloss.Color("12"), // Bright Blue
+	lipgloss.Color("13"), // Bright Magenta
+	lipgloss.Color("13"), // Bright Magenta
+}
+
 // ── 通用样式 ──────────────────────────────────────────────────
 var (
 	// TitleStyle 标题样式
@@ -79,3 +89,81 @@ var (
 			Foreground(colorDim).
 			Italic(true)
 )
+
+// ── 面板 & 增强样式 ─────────────────────────────────────────
+var (
+	// PanelStyle 选择面板容器：圆角边框 + 内边距
+	PanelStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(colorDim).
+			Padding(1, 2)
+
+	// PanelTitleStyle 面板内标题
+	PanelTitleStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(colorPrimary).
+			PaddingBottom(1)
+
+	// KeyBadgeStyle 快捷键 badge，例如 [Enter]
+	KeyBadgeStyle = lipgloss.NewStyle().
+			Foreground(colorCursorBar).
+			Bold(true)
+
+	// KeyDescStyle badge 旁的描述文字
+	KeyDescStyle = lipgloss.NewStyle().
+			Foreground(colorDim)
+
+	// StepStyle 步骤指示器样式
+	StepStyle = lipgloss.NewStyle().
+			Foreground(colorDim).
+			Bold(true)
+
+	// DividerStyle 水平分割线
+	DividerStyle = lipgloss.NewStyle().
+			Foreground(colorDim)
+
+	// ActiveRowStyle 选中行的背景条纹
+	ActiveRowStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(colorSecondary)
+
+	// CmdDescStyle 命令描述（等宽灰色）
+	CmdDescStyle = lipgloss.NewStyle().
+			Foreground(colorDim).
+			Italic(true)
+)
+
+// ── 辅助函数 ────────────────────────────────────────────────
+
+// FormatKeyHelp 格式化快捷键帮助，例如 FormatKeyHelp("↑↓", "选择") => "[↑↓] 选择"
+func FormatKeyHelp(key, desc string) string {
+	return KeyBadgeStyle.Render("["+key+"]") + " " + KeyDescStyle.Render(desc)
+}
+
+// FormatHelpLine 格式化一组快捷键帮助，用分隔符连接
+func FormatHelpLine(pairs ...string) string {
+	if len(pairs)%2 != 0 {
+		return ""
+	}
+	parts := make([]string, 0, len(pairs)/2)
+	for i := 0; i < len(pairs); i += 2 {
+		parts = append(parts, FormatKeyHelp(pairs[i], pairs[i+1]))
+	}
+	result := ""
+	for i, p := range parts {
+		if i > 0 {
+			result += "  "
+		}
+		result += p
+	}
+	return result
+}
+
+// Divider 返回指定宽度的水平分割线
+func Divider(width int) string {
+	line := ""
+	for i := 0; i < width; i++ {
+		line += "─"
+	}
+	return DividerStyle.Render(line)
+}
