@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 发布 ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive_name: forge-x86_64-unknown-linux-gnu.tar.gz
+          - os: macos-13
+            target: x86_64-apple-darwin
+            archive_name: forge-x86_64-apple-darwin.tar.gz
+          - os: macos-14
+            target: aarch64-apple-darwin
+            archive_name: forge-aarch64-apple-darwin.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive_name: forge-x86_64-pc-windows-msvc.zip
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: 缓存 Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: 构建 release 二进制
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          FORGE_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          export FORGE_BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          cargo build --release --locked --target "${{ matrix.target }}"
+
+      - name: 构建 release 二进制（Windows）
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          FORGE_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          $env:FORGE_BUILD_DATE = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          cargo build --release --locked --target "${{ matrix.target }}"
+
+      - name: 打包发布文件
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          package_dir="forge-${{ matrix.target }}"
+          mkdir -p "$package_dir"
+          cp "target/${{ matrix.target }}/release/forge" "$package_dir/forge"
+          cp "LICENSE" "README.md" "README.en.md" "$package_dir/"
+          tar -czf "${{ matrix.archive_name }}" "$package_dir"
+
+      - name: 打包发布文件（Windows）
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $packageDir = "forge-${{ matrix.target }}"
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/forge.exe" "$packageDir/forge.exe"
+          Copy-Item "LICENSE", "README.md", "README.en.md" $packageDir
+          Compress-Archive -Path $packageDir -DestinationPath "${{ matrix.archive_name }}" -Force
+
+      - name: 上传 Release 资产
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.archive_name }}

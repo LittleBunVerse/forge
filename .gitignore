@@ -1,0 +1,9 @@
+# Rust / Go 编译产物
+/target
+/dist
+/forge
+/aidev
+/open-ai
+/golaunch
+/cod
+*.exe

@@ -1,0 +1,25 @@
+[package]
+name = "forge"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.85"
+description = "给 AI 编程助手准备的终端启动器"
+license = "Apache-2.0"
+repository = "https://github.com/LittleBunVerse/forge"
+homepage = "https://github.com/LittleBunVerse/forge"
+readme = "README.md"
+keywords = ["cli", "tui", "launcher", "codex", "claude"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+anyhow = "1.0"
+crossterm = "0.29"
+ratatui = "0.29"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tempfile = "3.15"
+which = "7.0"
+
+[dev-dependencies]
+serial_test = "3.2"
+temp-env = "0.3"
