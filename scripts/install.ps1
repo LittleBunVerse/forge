@@ -6,6 +6,17 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+# 检查执行策略 —— 如果脚本被管道调用（irm | iex）则不需要检查
+$policy = Get-ExecutionPolicy -Scope CurrentUser
+if ($policy -eq "Restricted" -or $policy -eq "AllSigned") {
+    Write-Host ""
+    Write-Host "当前 PowerShell 执行策略为 '$policy'，可能阻止脚本运行。" -ForegroundColor Yellow
+    Write-Host "如果遇到错误，请先以管理员身份运行以下命令，然后重试：" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" -ForegroundColor Cyan
+    Write-Host ""
+}
+
 $repo = "LittleBunVerse/forge"
 $binaryName = "forge.exe"
 
@@ -46,10 +57,16 @@ try {
         Write-Host "现在可以直接运行：forge"
     } else {
         Write-Host "当前 PATH 里还没有 $InstallDir"
-        Write-Host "当前会话可先执行："
-        Write-Host ('$env:PATH = "{0};" + $env:PATH' -f $InstallDir)
-        Write-Host "然后运行："
-        Write-Host "forge"
+        Write-Host ""
+        Write-Host "[一次性生效] 在当前 PowerShell 中执行："
+        Write-Host ""
+        Write-Host ('  $env:PATH = "{0};" + $env:PATH' -f $InstallDir)
+        Write-Host ""
+        Write-Host "[永久生效] 将安装目录写入用户级环境变量（仅需执行一次）："
+        Write-Host ""
+        Write-Host ('  [Environment]::SetEnvironmentVariable("PATH", "{0};" + [Environment]::GetEnvironmentVariable("PATH", "User"), "User")' -f $InstallDir)
+        Write-Host ""
+        Write-Host "然后重新打开 PowerShell，运行：forge"
     }
 }
 finally {
