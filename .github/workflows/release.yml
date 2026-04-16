@@ -80,6 +80,6 @@ jobs:
           Compress-Archive -Path $packageDir -DestinationPath "${{ matrix.archive_name }}" -Force
 
       - name: 上传 Release 资产
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${{ matrix.archive_name }}
