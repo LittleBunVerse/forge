@@ -130,9 +130,33 @@ case ":$PATH:" in
     ;;
   *)
     echo "当前 PATH 里还没有 $INSTALL_DIR"
-    echo "请先执行："
+    echo ""
+
+    # 检测用户的 shell 配置文件
+    shell_name="$(basename "${SHELL:-/bin/sh}")"
+    case "$shell_name" in
+      zsh)  profile_file="$HOME/.zshrc" ;;
+      bash)
+        if [ -f "$HOME/.bash_profile" ]; then
+          profile_file="$HOME/.bash_profile"
+        else
+          profile_file="$HOME/.bashrc"
+        fi
+        ;;
+      fish) profile_file="$HOME/.config/fish/config.fish" ;;
+      *)    profile_file="$HOME/.profile" ;;
+    esac
+
+    echo "【一次性生效】在当前终端中执行："
+    echo ""
     echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
-    echo "然后运行："
-    echo "  forge"
+    echo ""
+    echo "【永久生效】将上面这行追加到你的 shell 配置文件中："
+    echo ""
+    echo "  echo 'export PATH=\"$INSTALL_DIR:\$PATH\"' >> $profile_file"
+    echo ""
+    echo "然后重新打开终端，或执行：source $profile_file"
+    echo ""
+    echo "完成后运行：forge"
     ;;
 esac
