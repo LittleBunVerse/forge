@@ -7,9 +7,12 @@
 Pick a workspace, jump into a project, and launch your preferred AI CLI from one entry point.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Rust](https://img.shields.io/badge/Rust-1.94%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![CI](https://github.com/LittleBunVerse/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/LittleBunVerse/forge/actions/workflows/ci.yml)
+[![Rust](https://img.shields.io/badge/Rust-1.85%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-444444)](#install--run)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[中文 README](./README.md) · [Install & Run](#install--run)
+[中文 README](./README.md) · [Install & Run](#install--run) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -32,46 +35,84 @@ Forge gives you one terminal entry for:
 
 ---
 
+## Prerequisites
+
+Forge is a **launcher** — it helps you pick a project and start an AI coding assistant. You need at least one AI CLI installed before using Forge:
+
+| AI Assistant | Install | Notes |
+|-------------|---------|-------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) | `npm install -g @anthropic-ai/claude-code` | Anthropic official CLI |
+| [Codex](https://github.com/openai/codex) | `npm install -g @openai/codex` | OpenAI official CLI |
+| Other tools | See each tool's docs | Any terminal command can be configured in Forge |
+
+> You can install Forge first and configure commands later.
+
+---
+
 ## Install & Run
 
-Prebuilt install on macOS / Linux:
+### Option 1: One-line Install (Recommended)
+
+macOS / Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/install.sh | sh
 ```
 
-Prebuilt install on Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/install.ps1 | iex
 ```
 
-Install from source with Rust:
+> **Windows users**: If you see "running scripts is disabled", run this first as Administrator:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+> Then retry the install command above.
+
+The script auto-detects your platform, downloads a prebuilt binary from GitHub Releases, and installs to:
+
+- macOS / Linux: `~/.local/bin`
+- Windows: `%LOCALAPPDATA%\Programs\forge\bin`
+
+After installation, the script shows how to add the path to your `PATH` (including permanent setup). Just follow the instructions.
+
+### Option 2: Install from Source
+
+Install the [Rust toolchain](https://rustup.rs/) first (if you don't have it):
 
 ```bash
+# Install Rust (includes cargo)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Restart your terminal, then install Forge
 cargo install --git https://github.com/LittleBunVerse/forge.git forge
 ```
 
-Install from the current local checkout:
+Install from a local checkout:
 
 ```bash
 cargo install --path .
 ```
 
-After installation, start Forge with:
+### Verify Installation
+
+```bash
+forge --version
+```
+
+### Launch
 
 ```bash
 forge
 ```
 
-Forge does not install Claude Code, Codex, or other AI CLIs for you.  
-Make sure the command you want to launch is already available in `PATH`.
-
 On first run, Forge guides you through:
 
-1. choosing a default root directory
-2. selecting a project folder
-3. choosing a launch command
+1. **Choose a default root directory** — where do you keep your projects? e.g. `~/Projects`
+2. **Select a project folder** — pick one from the root directory
+3. **Choose a launch command** — Claude Code, Codex, or something else?
 
 You can also point Forge to a root directory directly:
 
@@ -162,6 +203,34 @@ Build locally:
 ```bash
 cargo build
 ```
+
+---
+
+## Contributing
+
+Contributions of all kinds are welcome! Whether it's bug fixes, feature suggestions, or documentation improvements.
+
+- Read the [Contributing Guide](./CONTRIBUTING.md) for the development workflow
+- Check the [Code of Conduct](./CODE_OF_CONDUCT.md) for community standards
+- Discuss ideas in [Discussions](https://github.com/LittleBunVerse/forge/discussions)
+
+### Contributors
+
+<a href="https://github.com/LittleBunVerse/forge/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LittleBunVerse/forge" />
+</a>
+
+---
+
+## Star History
+
+<a href="https://star-history.com/#LittleBunVerse/forge&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date" />
+ </picture>
+</a>
 
 ---
 
