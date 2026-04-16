@@ -23,6 +23,7 @@ $binaryName = "forge.exe"
 $arch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture
 switch ($arch) {
     "X64" { $target = "x86_64-pc-windows-msvc" }
+    "Arm64" { $target = "aarch64-pc-windows-msvc" }
     default {
         throw "当前 Windows 架构暂不支持预编译安装：$arch。请改用 cargo install --git https://github.com/$repo.git forge"
     }

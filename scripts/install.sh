@@ -61,12 +61,24 @@ download() {
 os="$(uname -s)"
 arch="$(uname -m)"
 
+# 检测 Linux 是 musl（Alpine 等）还是 glibc
+detect_linux_libc() {
+  if [ -f /lib/ld-musl-x86_64.so.1 ] \
+     || [ -f /lib/ld-musl-aarch64.so.1 ] \
+     || (command -v ldd >/dev/null 2>&1 && ldd --version 2>&1 | grep -qi musl); then
+    echo "musl"
+  else
+    echo "gnu"
+  fi
+}
+
 case "$os" in
   Darwin)
     platform="apple-darwin"
     ;;
   Linux)
-    platform="unknown-linux-gnu"
+    libc="$(detect_linux_libc)"
+    platform="unknown-linux-$libc"
     ;;
   *)
     echo "当前系统暂不支持预编译安装：$os" >&2
@@ -92,9 +104,18 @@ esac
 target="$cpu-$platform"
 archive_name="forge-$target.tar.gz"
 
-if [ "$target" = "aarch64-unknown-linux-gnu" ]; then
-  echo "Linux ARM64 暂未提供预编译安装包，请改用：" >&2
-  echo "cargo install --git https://github.com/$REPO.git forge" >&2
+# 当前发布的预编译目标列表（与 .github/workflows/release.yml 保持一致）
+SUPPORTED_TARGETS="
+x86_64-unknown-linux-gnu
+x86_64-unknown-linux-musl
+aarch64-unknown-linux-gnu
+x86_64-apple-darwin
+aarch64-apple-darwin
+"
+
+if ! echo "$SUPPORTED_TARGETS" | grep -q "^$target$"; then
+  echo "当前平台暂未提供预编译安装包：$target" >&2
+  echo "请改用：cargo install --git https://github.com/$REPO.git forge" >&2
   exit 1
 fi
 

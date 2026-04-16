@@ -1,0 +1,8 @@
+# cross-rs 配置 —— 让 Docker 容器内的构建能拿到这些环境变量
+# 详见 https://github.com/cross-rs/cross/wiki/Configuration
+
+[build.env]
+passthrough = [
+    "FORGE_GIT_COMMIT",
+    "FORGE_BUILD_DATE",
+]
