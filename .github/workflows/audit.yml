@@ -1,0 +1,30 @@
+name: Security Audit
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    # 每周一 18:00 UTC 定时扫描
+    - cron: "0 18 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: 依赖安全审计
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 安装 cargo-audit
+        run: cargo install cargo-audit
+
+      - name: 运行依赖漏洞扫描
+        run: cargo audit
