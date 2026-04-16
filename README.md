@@ -7,10 +7,12 @@
 在一个入口里完成：选择工作区、切换项目目录、统一启动命令。
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Rust](https://img.shields.io/badge/Rust-1.94%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![CI](https://github.com/LittleBunVerse/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/LittleBunVerse/forge/actions/workflows/ci.yml)
+[![Rust](https://img.shields.io/badge/Rust-1.85%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-444444)](./README.en.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[English](./README.en.md) · [安装与启动](#安装与启动) · [配置文件](#配置文件) · [常见问题](#常见问题)
+[English](./README.en.md) · [安装与启动](#安装与启动) · [配置文件](#配置文件) · [常见问题](#常见问题) · [贡献指南](./CONTRIBUTING.md)
 
 </div>
 
@@ -32,9 +34,23 @@ Forge 是一个面向 AI 编程助手的终端启动器。
 
 ---
 
+## 前置要求
+
+Forge 本身是一个**启动器**，它帮你选择项目并启动 AI 编程助手。所以在安装 Forge 之前，你需要先安装至少一个 AI 编程助手：
+
+| AI 编程助手 | 安装方式 | 说明 |
+|-------------|---------|------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) | `npm install -g @anthropic-ai/claude-code` | Anthropic 官方 CLI |
+| [Codex](https://github.com/openai/codex) | `npm install -g @openai/codex` | OpenAI 官方 CLI |
+| 其他工具 | 各工具自身文档 | 任何可在终端运行的命令都可以配置进 Forge |
+
+> 如果你还没装上面任何一个，也可以先安装 Forge 体验界面，之后再配置具体命令。
+
+---
+
 ## 安装与启动
 
-### 1. 预编译安装
+### 方式一：一键安装（推荐）
 
 macOS / Linux：
 
@@ -48,18 +64,28 @@ Windows PowerShell：
 irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/install.ps1 | iex
 ```
 
-安装脚本会从 GitHub Release 下载与你平台匹配的二进制，并安装到：
+> **Windows 用户注意**：如果提示”无法运行脚本”，请先以管理员身份执行：
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+> 然后重新运行上面的安装命令。
+
+安装脚本会自动检测你的系统和架构，从 GitHub Release 下载对应的预编译二进制，安装到：
 
 - macOS / Linux：`~/.local/bin`
-- Windows：`%LOCALAPPDATA%/Programs/forge/bin`
+- Windows：`%LOCALAPPDATA%\Programs\forge\bin`
 
-如果该目录还没在 `PATH` 中，脚本会直接告诉你下一条该执行的命令。
+安装完成后，脚本会告诉你如何将路径添加到 `PATH`（包括永久生效的方法），照着提示操作即可。
 
-### 2. 源码安装
+### 方式二：源码安装
 
-如果你本机已经有 Rust，也可以直接用一条命令安装：
+需要先安装 [Rust 工具链](https://rustup.rs/)（如果还没有的话）：
 
 ```bash
+# 安装 Rust（会同时安装 cargo）
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 安装完成后重启终端，然后安装 Forge
 cargo install --git https://github.com/LittleBunVerse/forge.git forge
 ```
 
@@ -69,18 +95,15 @@ cargo install --git https://github.com/LittleBunVerse/forge.git forge
 cargo install --path .
 ```
 
-### 3. 确保你的 AI CLI 已可用
-
-Forge 负责“进入项目并启动命令”，不会替你安装 Claude Code、Codex 或其他工具。
-
-至少确保你要启动的命令已经在 `PATH` 中，例如：
+### 验证安装
 
 ```bash
-claude --help
-codex --help
+forge --version
 ```
 
-### 4. 启动
+如果能看到版本号，说明安装成功。
+
+### 启动
 
 ```bash
 forge
@@ -88,29 +111,22 @@ forge
 
 第一次使用时，Forge 会引导你完成这 3 件事：
 
-1. 选择默认根目录。
-2. 选择项目目录。
-3. 选择启动命令。
+1. **选择默认根目录** — 你的项目通常放在哪？比如 `~/Projects`
+2. **选择项目目录** — 从根目录下的子文件夹中选一个
+3. **选择启动命令** — 用 Claude Code、Codex 还是其他工具？
 
 如果你已经知道这次要扫描哪个目录，也可以直接指定：
 
 ```bash
-forge --root "~/Projects"
+forge --root “~/Projects”
 
 # 位置参数也可以直接作为 root 使用
-forge "~/IdeaProjects"
+forge “~/IdeaProjects”
 ```
 
-### 5. 版本与安装入口
+### 分享给别人
 
-安装完成后，别人只需要记住两条命令：
-
-```bash
-forge --version
-forge
-```
-
-如果你要把项目发给别人，推荐直接给下面两种安装命令之一：
+推荐直接给下面两种安装命令之一：
 
 - 预编译安装：`curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/install.sh | sh`
 - Rust 源码安装：`cargo install --git https://github.com/LittleBunVerse/forge.git forge`
@@ -441,6 +457,34 @@ cargo build
 ```bash
 cargo run -- --help
 ```
+
+---
+
+## 贡献
+
+欢迎各种形式的贡献！无论是 Bug 修复、功能建议还是文档改进，我们都非常感谢。
+
+- 阅读 [贡献指南](./CONTRIBUTING.md) 了解开发流程
+- 查看 [行为准则](./CODE_OF_CONDUCT.md) 了解社区规范
+- 在 [Discussions](https://github.com/LittleBunVerse/forge/discussions) 中讨论想法
+
+### 贡献者
+
+<a href="https://github.com/LittleBunVerse/forge/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LittleBunVerse/forge" />
+</a>
+
+---
+
+## Star History
+
+<a href="https://star-history.com/#LittleBunVerse/forge&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LittleBunVerse/forge&type=Date" />
+ </picture>
+</a>
 
 ---
 
