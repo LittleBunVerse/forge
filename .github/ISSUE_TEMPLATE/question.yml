@@ -1,0 +1,39 @@
+name: Question / 问题咨询
+description: 提问或请求帮助 / Ask a question or request help
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **建议优先在 [Discussions](https://github.com/LittleBunVerse/forge/discussions) 提问**，便于其他用户搜索到答案。Issue 主要用于追踪 Bug 与功能。
+        >
+        > Consider asking in [Discussions](https://github.com/LittleBunVerse/forge/discussions) first.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: 提交前检查 / Pre-submission checklist
+      options:
+        - label: 我已查阅 [README](https://github.com/LittleBunVerse/forge/blob/main/README.md) 与常见问题 / I've read the README and FAQ
+          required: true
+        - label: 我已搜索现有 Issues 与 Discussions / I've searched issues and discussions
+          required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 问题描述 / Question
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 上下文 / Context
+      description: 你正在尝试做什么？为什么需要这个？/ What are you trying to do? Why?
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: 已尝试的方法 / What you've tried

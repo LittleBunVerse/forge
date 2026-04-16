@@ -1,0 +1,112 @@
+name: Bug Report / Bug 报告
+description: 报告一个可复现的缺陷 / Report a reproducible bug
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你花时间报告 Bug！请尽量提供完整信息，便于我们快速定位。
+        Thanks for taking the time to report a bug! Please provide as much detail as possible.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: 提交前检查 / Pre-submission checklist
+      options:
+        - label: 我已搜索 [现有 Issues](https://github.com/LittleBunVerse/forge/issues) 确认这不是重复报告 / I searched existing issues and this is not a duplicate
+          required: true
+        - label: 我正在使用最新版本的 Forge / I am using the latest version of Forge
+          required: true
+        - label: 这不是安全漏洞（安全问题请按 [SECURITY.md](https://github.com/LittleBunVerse/forge/blob/main/SECURITY.md) 私下报告）/ This is not a security vulnerability
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug 描述 / Bug Description
+      description: 清晰简洁地描述 Bug / A clear and concise description of what the bug is.
+      placeholder: "例：选择项目后按回车，终端闪退..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤 / Steps to Reproduce
+      description: 如何复现这个 Bug / How to reproduce
+      placeholder: |
+        1. 运行 `forge`
+        2. 选择"从根目录浏览"
+        3. 选择某个项目
+        4. 看到错误...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为 / Expected Behavior
+      placeholder: 应该进入命令选择界面
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为 / Actual Behavior
+      placeholder: 终端闪退，无错误输出...
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图 / 日志 / Screenshots / Logs
+      description: 拖拽截图到这里，或粘贴终端输出 / Drag screenshots here, or paste terminal output
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Forge 版本 / Version
+      placeholder: "例：v1.0.0（运行 forge -v 查看）"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: 操作系统 / OS
+      placeholder: "例：macOS 15.0 / Ubuntu 24.04 / Windows 11"
+    validations:
+      required: true
+
+  - type: input
+    id: rust-version
+    attributes:
+      label: Rust 版本（源码编译时）/ Rust Version (if built from source)
+      placeholder: "例：rustc 1.85.0（运行 rustc --version 查看）"
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: 安装方式 / Install Method
+      options:
+        - 预编译安装脚本 / Pre-built install script
+        - cargo install（源码）/ cargo install (from source)
+        - 本地 cargo build / Local cargo build
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: 配置文件内容 / Config File Content
+      description: 运行 `forge config` 查看（请脱敏路径）/ Run `forge config` to check (redact sensitive paths)
+      render: json
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他信息 / Additional Context

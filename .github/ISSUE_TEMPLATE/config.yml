@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions / 社区讨论
+    url: https://github.com/LittleBunVerse/forge/discussions
+    about: 提问、想法分享、方案讨论 / Ask questions, share ideas, discuss design
+  - name: Documentation / 文档
+    url: https://github.com/LittleBunVerse/forge/blob/main/README.md
+    about: 安装、配置、使用文档 / Installation, configuration, usage docs
+  - name: Security Vulnerability / 安全漏洞
+    url: https://github.com/LittleBunVerse/forge/blob/main/SECURITY.md
+    about: 私下报告安全问题 / Report security issues privately
