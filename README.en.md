@@ -12,7 +12,7 @@ Pick a workspace, jump into a project, and launch your preferred AI CLI from one
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-444444)](#install--run)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[中文 README](./README.md) · [Install & Run](#install--run) · [Contributing](./CONTRIBUTING.md)
+[中文 README](./README.md) · [Install & Run](#install--run) · [Uninstall](#uninstall) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -101,6 +101,38 @@ cargo install --path .
 ```bash
 forge --version
 ```
+
+### Uninstall
+
+**Simple uninstall (remove binary only, keep config):**
+
+macOS / Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.sh | sh
+```
+
+Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.ps1 | iex
+```
+
+**Full uninstall (also remove `~/.config/forge` and legacy `~/.config/aidev`):**
+
+macOS / Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.sh | sh -s -- --purge --yes
+```
+
+Windows PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.ps1))) -Purge -Yes
+```
+
+> If you installed via `cargo install`, run `cargo uninstall forge` for the binary. Use the `--purge` script above if you also want to clean the config directory.
 
 ### Launch
 

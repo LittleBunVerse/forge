@@ -12,7 +12,7 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-444444)](./README.en.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[English](./README.en.md) · [安装与启动](#安装与启动) · [配置文件](#配置文件) · [常见问题](#常见问题) · [贡献指南](./CONTRIBUTING.md)
+[English](./README.en.md) · [安装与启动](#安装与启动) · [卸载](#卸载) · [配置文件](#配置文件) · [常见问题](#常见问题) · [贡献指南](./CONTRIBUTING.md)
 
 </div>
 
@@ -102,6 +102,38 @@ forge --version
 ```
 
 如果能看到版本号，说明安装成功。
+
+### 卸载
+
+**简单卸载（只删二进制，保留配置）：**
+
+macOS / Linux：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.sh | sh
+```
+
+Windows PowerShell：
+
+```powershell
+irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.ps1 | iex
+```
+
+**彻底卸载（同时删除 `~/.config/forge` 和 legacy `~/.config/aidev`）：**
+
+macOS / Linux：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.sh | sh -s -- --purge --yes
+```
+
+Windows PowerShell：
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/LittleBunVerse/forge/main/scripts/uninstall.ps1))) -Purge -Yes
+```
+
+> 源码安装（`cargo install`）的用户请用 `cargo uninstall forge` 卸载二进制；如需清理配置，继续用上面 `--purge` 脚本即可。
 
 ### 启动
 
