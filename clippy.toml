@@ -1,0 +1,11 @@
+# Forge Clippy 配置
+# 详见 https://doc.rust-lang.org/clippy/configuration.html
+
+# 单个函数的认知复杂度上限
+cognitive-complexity-threshold = 30
+
+# 函数参数数量上限
+too-many-arguments-threshold = 8
+
+# 单个类型允许的最大行数
+type-complexity-threshold = 300
