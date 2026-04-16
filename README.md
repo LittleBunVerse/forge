@@ -470,9 +470,14 @@ cargo run -- --help
 
 ### 贡献者
 
-<a href="https://github.com/LittleBunVerse/forge/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LittleBunVerse/forge" />
+<a href="https://github.com/tajiaoyezi" title="tajiaoyezi">
+  <img src="https://github.com/tajiaoyezi.png" width="60" height="60" alt="tajiaoyezi" style="border-radius: 50%;" />
 </a>
+<a href="https://github.com/LittleBunVerse" title="LittleBunVerse">
+  <img src="https://github.com/LittleBunVerse.png" width="60" height="60" alt="LittleBunVerse" style="border-radius: 50%;" />
+</a>
+
+> 完整贡献者列表见 [GitHub Contributors](https://github.com/LittleBunVerse/forge/graphs/contributors)。
 
 ---
 
