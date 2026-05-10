@@ -420,15 +420,13 @@ impl SimpleListState {
 
     fn handle_key(&mut self, key: KeyEvent) -> Option<TerminalOutcome> {
         match key.code {
-            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() => {
-                if self.selected > 0 {
-                    self.selected -= 1;
-                }
+            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() && self.selected > 0 => {
+                self.selected -= 1;
             }
-            KeyCode::Down | KeyCode::Char('j') if key.modifiers.is_empty() => {
-                if self.selected + 1 < self.rows.len() {
-                    self.selected += 1;
-                }
+            KeyCode::Down | KeyCode::Char('j')
+                if key.modifiers.is_empty() && self.selected + 1 < self.rows.len() =>
+            {
+                self.selected += 1;
             }
             KeyCode::Enter => return Some(TerminalOutcome::Selected(self.selected)),
             KeyCode::Esc => return Some(TerminalOutcome::Canceled),
@@ -489,15 +487,13 @@ impl RootSelectState {
 
     fn handle_select_key(&mut self, key: KeyEvent) -> Option<TerminalOutcome> {
         match key.code {
-            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() => {
-                if self.selected > 0 {
-                    self.selected -= 1;
-                }
+            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() && self.selected > 0 => {
+                self.selected -= 1;
             }
-            KeyCode::Down | KeyCode::Char('j') if key.modifiers.is_empty() => {
-                if self.selected + 1 < self.options.len() {
-                    self.selected += 1;
-                }
+            KeyCode::Down | KeyCode::Char('j')
+                if key.modifiers.is_empty() && self.selected + 1 < self.options.len() =>
+            {
+                self.selected += 1;
             }
             KeyCode::Enter => {
                 if self.options[self.selected].is_manual {
@@ -583,15 +579,13 @@ impl DirSelectState {
     fn handle_key(&mut self, key: KeyEvent) -> Option<TerminalOutcome> {
         let filtered = self.filtered_indices();
         match key.code {
-            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() => {
-                if self.selected > 0 {
-                    self.selected -= 1;
-                }
+            KeyCode::Up | KeyCode::Char('k') if key.modifiers.is_empty() && self.selected > 0 => {
+                self.selected -= 1;
             }
-            KeyCode::Down | KeyCode::Char('j') if key.modifiers.is_empty() => {
-                if self.selected + 1 < filtered.len() {
-                    self.selected += 1;
-                }
+            KeyCode::Down | KeyCode::Char('j')
+                if key.modifiers.is_empty() && self.selected + 1 < filtered.len() =>
+            {
+                self.selected += 1;
             }
             KeyCode::Enter => {
                 if let Some(index) = filtered.get(self.selected) {
