@@ -223,8 +223,8 @@ fn run_with_explicit_root(
         let exists = match load_result {
             Ok((_, exists)) => exists,
             Err(err) => {
-                let _ = writeln!(stderr, "读取本地配置失败（将尝试覆盖写入）：{err}");
-                false
+                let _ = writeln!(stderr, "读取本地配置失败（将跳过保存默认根目录）：{err}");
+                true
             }
         };
 
@@ -909,6 +909,7 @@ mod tests {
         current_dir: String,
         config_load_results: RefCell<VecDeque<Result<(Config, bool)>>>,
         config_save_results: RefCell<VecDeque<Result<PathBuf>>>,
+        config_save_calls: RefCell<Vec<Config>>,
         config_save_root_results: RefCell<VecDeque<Result<PathBuf>>>,
         normalize_root_results: RefCell<VecDeque<Result<String>>>,
         list_dirs_results: RefCell<VecDeque<Result<Vec<Dir>>>>,
@@ -934,6 +935,7 @@ mod tests {
                 current_dir: "/current".to_string(),
                 config_load_results: RefCell::new(VecDeque::new()),
                 config_save_results: RefCell::new(VecDeque::new()),
+                config_save_calls: RefCell::new(Vec::new()),
                 config_save_root_results: RefCell::new(VecDeque::new()),
                 normalize_root_results: RefCell::new(VecDeque::new()),
                 list_dirs_results: RefCell::new(VecDeque::new()),
@@ -972,7 +974,8 @@ mod tests {
             Ok(self.config_path_value.borrow().clone())
         }
 
-        fn config_save(&self, _cfg: Config) -> Result<PathBuf> {
+        fn config_save(&self, cfg: Config) -> Result<PathBuf> {
+            self.config_save_calls.borrow_mut().push(cfg);
             self.config_save_results
                 .borrow_mut()
                 .pop_front()
@@ -1168,6 +1171,58 @@ mod tests {
             String::from_utf8(stderr)
                 .unwrap()
                 .contains("已保存默认根目录")
+        );
+    }
+
+    #[test]
+    fn test_run_with_explicit_root_does_not_save_when_config_load_fails() {
+        let services = FakeServices::new();
+        services
+            .normalize_root_results
+            .borrow_mut()
+            .push_back(Ok("/Projects".to_string()));
+        services
+            .config_load_results
+            .borrow_mut()
+            .push_back(Err(anyhow!("broken config")));
+        services
+            .list_dirs_results
+            .borrow_mut()
+            .push_back(Ok(vec![Dir {
+                name: "demo".to_string(),
+                path: "/Projects/demo".to_string(),
+            }]));
+        services.select_dir_results.borrow_mut().push_back(Ok((
+            Dir {
+                name: "demo".to_string(),
+                path: "/Projects/demo".to_string(),
+            },
+            true,
+        )));
+
+        let mut stdout = Vec::new();
+        let mut stderr = Vec::new();
+        let exit_code = run_with_services(
+            vec![
+                OsString::from("forge"),
+                OsString::from("--root"),
+                OsString::from("~/Projects"),
+            ],
+            &mut stdout,
+            &mut stderr,
+            &services,
+        );
+
+        assert_eq!(exit_code, EXIT_OK);
+        assert!(
+            services.config_save_calls.borrow().is_empty(),
+            "读取配置失败时不应保存默认配置"
+        );
+        assert!(
+            String::from_utf8(stderr)
+                .unwrap()
+                .contains("读取本地配置失败"),
+            "应提示配置读取失败"
         );
     }
 
