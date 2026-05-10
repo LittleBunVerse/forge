@@ -13,6 +13,7 @@ pub const LEGACY_APP_NAME: &str = "aidev";
 pub struct CommandConfig {
     pub name: String,
     pub command: String,
+    #[serde(default)]
     pub args: Vec<String>,
 }
 
@@ -140,7 +141,7 @@ pub fn save_root(root: &str) -> Result<PathBuf> {
         return Err(anyhow!("root 不能为空"));
     }
 
-    let (mut cfg, _) = load().unwrap_or_default();
+    let (mut cfg, _) = load()?;
     cfg.root = normalized.to_string();
     save(cfg)
 }
@@ -396,6 +397,41 @@ mod tests {
 
     #[test]
     #[serial]
+    fn test_load_command_missing_args_defaults_to_empty() {
+        let base = tempfile::tempdir().expect("创建临时目录失败");
+        let root = tempfile::tempdir().expect("创建 root 目录失败");
+        let app_dir = base.path().join(CURRENT_APP_NAME);
+        fs::create_dir_all(&app_dir).expect("创建应用配置目录失败");
+        let payload = serde_json::json!({
+            "root": root.path().to_string_lossy(),
+            "commands": [
+                {
+                    "name": "Codex",
+                    "command": "codex"
+                }
+            ]
+        });
+        fs::write(
+            app_dir.join("config.json"),
+            serde_json::to_vec_pretty(&payload).expect("序列化配置失败"),
+        )
+        .expect("写入配置失败");
+
+        with_var(
+            "FORGE_CONFIG_DIR",
+            Some(base.path().to_string_lossy().to_string()),
+            || {
+                let (cfg, exists) = load().expect("缺少 args 的配置应正常加载");
+                assert!(exists, "期望 exists=true");
+                assert_eq!(cfg.commands.len(), 1, "期望保留自定义命令");
+                assert_eq!(cfg.commands[0].name, "Codex");
+                assert!(cfg.commands[0].args.is_empty(), "缺少 args 应视为空数组");
+            },
+        );
+    }
+
+    #[test]
+    #[serial]
     fn test_save_root_preserves_existing_commands() {
         let base = tempfile::tempdir().expect("创建临时目录失败");
         let root1 = tempfile::tempdir().expect("创建 root1 目录失败");
@@ -436,6 +472,30 @@ mod tests {
                 assert_eq!(cfg.commands.len(), 1, "期望保留 1 个命令");
                 assert_eq!(cfg.commands[0].name, "MyTool");
                 assert_eq!(cfg.commands[0].command, "mytool");
+            },
+        );
+    }
+
+    #[test]
+    #[serial]
+    fn test_save_root_does_not_overwrite_unreadable_config() {
+        let base = tempfile::tempdir().expect("创建临时目录失败");
+        let root = tempfile::tempdir().expect("创建 root 目录失败");
+        let app_dir = base.path().join(CURRENT_APP_NAME);
+        fs::create_dir_all(&app_dir).expect("创建应用配置目录失败");
+        let path = app_dir.join("config.json");
+        let original = "{invalid-json\n";
+        fs::write(&path, original).expect("写入损坏配置失败");
+
+        with_var(
+            "FORGE_CONFIG_DIR",
+            Some(base.path().to_string_lossy().to_string()),
+            || {
+                let err = save_root(root.path().to_string_lossy().as_ref())
+                    .expect_err("配置读取失败时不应继续保存");
+                assert!(err.to_string().contains("解析配置文件失败"));
+                let content = fs::read_to_string(&path).expect("读取配置文件失败");
+                assert_eq!(content, original, "损坏配置不应被新配置覆盖");
             },
         );
     }
